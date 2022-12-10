@@ -1,0 +1,26 @@
+{
+  'name': {'type': 'string', 'default': 'ind_reg'},
+  'namespace': {'type': 'string', 'default': 'bootstrap'},
+  'prefix': {'type': 'string', 'default': 'idx'},
+  'kind': {'type': 'string', 'default': 'node'},
+
+  'keys': {
+    'required': True,
+    'type': 'dict',
+    'schema': {
+      '_id': {'type': 'string','default': ''},
+      'label': {'type': 'string', 'required': True,},
+      'name': {'type': 'string', 'required': True,}
+    },
+  },
+  
+  'props': {
+    'required': True,
+    'type': 'dict',
+    'schema': {
+      'source': {'type': 'string', 'required': True},
+      'commit_id': {'type': 'string', 'default': ''},
+      'doc': {'type': 'string', 'default': '' }
+    },
+  }
+}
