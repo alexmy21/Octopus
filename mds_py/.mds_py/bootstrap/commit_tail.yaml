@@ -1,0 +1,32 @@
+{
+  'name': {'type': 'string', 'default': 'commit'},
+  'namespace': {'type': 'string', 'default': 'bootstrap'},
+  'prefix': {'type': 'string', 'default': 'tail'},
+  'kind': {'type': 'string', 'default': 'node'},
+
+  'keys': {
+    'required': True,
+    'type': 'dict',
+    'schema': {
+      '__id': {'type': 'string','default': ''},
+      # Reference to commit
+      'commit_id': {'type': 'string', 'default': ''},
+      'label': {'type': 'string', 'default': 'COMMIT',},
+      'name': {'type': 'string', 'required': True,},
+      # Timestamt of submission to the tail
+      'timestamp': {'type': 'string', 'default': ''},
+      'idx-name': {'type': 'string', 'required': True,},
+      'idx_prefix': {'type': 'string', 'required': True,},
+    },
+  },
+  
+  'props': {
+    'required': True,
+    'type': 'dict',
+    'schema': {  
+      'yaml': {'type': 'string', 'required': True,},    
+      'status': {'type': 'string', 'default': ''},
+      'doc': {'type': 'string', 'default': '' }
+    },
+  }
+}

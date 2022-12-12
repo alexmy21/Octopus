@@ -1,6 +1,4 @@
 
-from typing import Union
-
 from mds_vocabulary import Vocabulary as voc
 
 import yaml
@@ -8,8 +6,8 @@ import redis
 
 class Utils:
 
-    def getConfig(file_name: Union[str, None]) -> Union[dict, None]:
-        config:Union[dict, None]
+    def getConfig(file_name: str | None) -> dict|None:
+        config: dict | None
         try:
             with open(file_name, 'r') as file:
                 config = yaml.safe_load(file)
@@ -18,7 +16,7 @@ class Utils:
             
         return config
 
-    def getRedis(config: dict) -> Union[redis.Redis, None]:
+    def getRedis(config: dict) -> redis.Redis|None:
         host = config.get(voc.REDIS, {}).get(voc.REDIS_HOST)
         port = config.get(voc.REDIS, {}).get(voc.REDIS_PORT)
 
@@ -26,6 +24,7 @@ class Utils:
 
     def getSubDict(self, dict, key) ->  dict:
         new_dict = {}
+        
         for key, value in dict[key].items():
             if type(value) == dict:
                 print(key)
@@ -41,8 +40,8 @@ class Utils:
 
         return schema
 
-    def updateRecord(mds:redis.Redis, map:dict) -> Union[str, None]:
-        ret:Union[str, None]
+    def updateRecord(mds:redis.Redis, map:dict) -> str|None:
+        ret: str|None
         for key, value in map.items():
             ret = mds.hset('hash', key, value)
 

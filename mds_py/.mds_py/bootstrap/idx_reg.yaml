@@ -8,7 +8,7 @@
     'required': True,
     'type': 'dict',
     'schema': {
-      '_id': {'type': 'string','default': ''},
+      '__id': {'type': 'string','default': ''},
       'label': {'type': 'string', 'required': True,},
       'name': {'type': 'string', 'required': True,}
     },
@@ -20,7 +20,7 @@
     'schema': {
       'source': {'type': 'string', 'required': True},
       'commit_id': {'type': 'string', 'default': ''},
-      'doc': {'type': 'string', 'default': '' }
+      'doc': {'type': 'string', 'default': 'Index that holds a schema list of all Indices including itself. Fields: __id field is SHA1 of index label and name; kind is one of: big_idx, commit, registry, node or relation; prefix is prefix associated with the index; source is a yaml string of the schema for the index.' }
     },
   }
 }

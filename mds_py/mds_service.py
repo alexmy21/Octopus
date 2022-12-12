@@ -1,4 +1,4 @@
-from commands import Commands
+from mds_py.mds_commands import Commands
 
 import flask
 from flask import request, jsonify,make_response
