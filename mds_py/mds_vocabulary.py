@@ -1,5 +1,7 @@
 class Vocabulary:
-    MDS_HOME = 'MDS_PY'
+    OK = 'OK'
+    
+    MDS_PY = 'MDS_PY'
     BOOTSTRAP = 'bootstrap'
     CONFIG = 'config'
     PROCESSORS = 'processors'
@@ -12,6 +14,14 @@ class Vocabulary:
     CONFIG_FILE = 'config.yaml'
     TRANSACTION = 'transaction.yaml'
     COMMIT = 'commit.yaml'
+
+    # Schema properties
+    NAME = 'name'
+    NAMESPACE = 'namespace'
+    PREFIX = 'prefix'
+    KIND = 'kind'
+    KEYS = 'keys'
+    PROPS = 'props'
 
     #  redis params
     REDIS = 'redis'

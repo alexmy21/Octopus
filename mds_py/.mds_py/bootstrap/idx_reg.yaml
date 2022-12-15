@@ -1,26 +1,21 @@
 {
   'name': {'type': 'string', 'default': 'ind_reg'},
   'namespace': {'type': 'string', 'default': 'bootstrap'},
-  'prefix': {'type': 'string', 'default': 'idx'},
+  'prefix': {'type': 'string', 'default': 'idx_reg'},
   'kind': {'type': 'string', 'default': 'node'},
 
-  'keys': {
-    'required': True,
-    'type': 'dict',
-    'schema': {
-      '__id': {'type': 'string','default': ''},
-      'label': {'type': 'string', 'required': True,},
-      'name': {'type': 'string', 'required': True,}
-    },
-  },
+  'keys': {'type': 'list', 'required': True, 'default': ['label', 'name', 'source']},
   
   'props': {
     'required': True,
     'type': 'dict',
     'schema': {
-      'source': {'type': 'string', 'required': True},
-      'commit_id': {'type': 'string', 'default': ''},
-      'doc': {'type': 'string', 'default': 'Index that holds a schema list of all Indices including itself. Fields: __id field is SHA1 of index label and name; kind is one of: big_idx, commit, registry, node or relation; prefix is prefix associated with the index; source is a yaml string of the schema for the index.' }
+      '__id': {'type': 'string', 'required': True, 'default': 'str'},
+      'label': {'type': 'string', 'required': True, 'default': 'str'},
+      'name': {'type': 'string', 'required': True, 'default': 'str'},
+      'source': {'type': 'string',  'required': True, 'default': 'str'},
+      'commit_id': {'type': 'string',  'required': True,'default': 'str'},
+      'doc': {'type': 'string',  'required': True, 'default': 'str' }
     },
   }
 }
