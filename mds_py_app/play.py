@@ -1,6 +1,7 @@
 import os
 from mds_py.mds_utils import Utils as utl
 from mds_py.mds_client import Client as clnt
+from mds_py.mds_vocabulary import Vocabulary as voc
 
 import yaml
 import redis
@@ -33,15 +34,14 @@ v = Validator()
 
 if v.validate(utl.doc_0, schema):
     n_doc = v.normalized(utl.doc_0, schema)
-
     p_dict = n_doc.get('props')
-
-    # utl.updateRecords(mds, seq)    
-   
+    # utl.updateRecords(mds, seq)
     print(n_doc.get('props'))
 else:
     print(v.errors)
 
-client.create_core_index('idx_reg')
-client.update_core_record('idx_reg', p_dict)
-# print(client.redis().ft('my-index').info())
+client.create_index(voc.BOOTSTRAP, 'idx_reg')
+client.update_record(voc.BOOTSTRAP, 'idx_reg', p_dict)
+
+rs = utl.getRedis(client.config)
+print(rs.ft('idx_reg').info())

@@ -37,32 +37,17 @@ class Client:
 
     # Following is a list  wrappers for commands from Commands module
     #====================================================================
-    def create_index(self, schema_name: str) -> str|None :
+    def create_index(self, schema_dir: str, schema_name: str) -> str|None :
         rs = utl.getRedis(self.config)
-        path = os.path.join(self.mds_home, voc.SCHEMAS, utl.schemaFile(schema_name))
+        path = os.path.join(self.mds_home, schema_dir, utl.schemaFile(schema_name))
         return cmd.createIndex(rs, schema_name, path)
     
-    def create_core_index(self, schema_name: str) -> str|None :
+    def update_record(self, schema_dir: str, schema_name: str, map: dict) -> str|None:
         rs = utl.getRedis(self.config)
-        path = os.path.join(self.mds_home, voc.BOOTSTRAP, utl.schemaFile(schema_name))
-        return cmd.createIndex(rs, schema_name, path)
-    
-    def update_record(self, schema_name: str, map: dict) -> str|None:
-        rs = utl.getRedis(self.config)
-        path = os.path.join(self.mds_home, voc.SCHEMAS, utl.schemaFile(schema_name))
+        path = os.path.join(self.mds_home, schema_dir, utl.schemaFile(schema_name))
         # rs:redis.Redis, pref: str, idx_name: str, schema_path: str, map:dict
         return cmd.updateRecord(rs, schema_name, schema_name, path, map)
 
-    def update_core_record(self, schema_name: str, map: dict) -> str|None:
-        rs = utl.getRedis(self.config)
-        path = os.path.join(self.mds_home, voc.BOOTSTRAP, utl.schemaFile(schema_name))
-        # rs:redis.Redis, pref: str, idx_name: str, schema_path: str, map:dict
-        return cmd.updateRecord(rs, schema_name, schema_name, path, map)
-
-    def set(self, key: str, val: str) -> str:
-        rs = utl.getRedis(self.config)
-        return cmd.set(rs, key, val)
-    
     def search(self, idx: str):
         rs = utl.getRedis(self.config)
         return self.redis().ft(idx)
