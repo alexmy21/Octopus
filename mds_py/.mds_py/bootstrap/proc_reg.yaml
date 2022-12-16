@@ -1,10 +1,13 @@
 {
   'name': {'type': 'string', 'default': 'proc_reg'},
   'namespace': {'type': 'string', 'default': 'bootstrap'},
-  'prefix': {'type': 'string', 'default': 'proc'},
+  'prefix': {'type': 'string', 'default': 'prog_reg'},
+  'label': {'type': 'string', 'default': 'PROC_REG'},
   'kind': {'type': 'string', 'default': 'node'},
 
-  'keys': {
+  'keys': {'required': True, 'type': 'list', 'default': ['__id', 'label', 'name', 'groupId', 'artifactId', 'version', 'packaging','language', 'repo', 'package']},
+
+  'props': {
     'required': True,
     'type': 'dict',
     'schema': {
@@ -18,17 +21,8 @@
       'language': {'type': 'string', 'default': ''},
       'repo': {'type': 'string', 'default': ''},
       'package': {'type': 'string', 'default': ''},
-      'prefix': {'type': 'string', 'default': ''},
-      'kind': {'type': 'string', 'default': ''},
-    }
-  },
-
-  'props': {
-    'required': True,
-    'type': 'dict',
-    'schema': {
       'yaml_schema': {'type': 'string', 'default': ''},
-      'doc': {'type': 'string', 'default': 'Index that holds a list of all Processors Indices. Fields: __id field is SHA1 of index name; kind is one of: big_idx, commit, registry, node or relation; prefix is prefix associated with the index; yaml_schema is a yaml string of the schema for the index.'},
+      'doc': {'type': 'string', 'default': 'str'},
     }
   }
 }

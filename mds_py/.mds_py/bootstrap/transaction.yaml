@@ -1,30 +1,26 @@
 {
   'name': {'type': 'string', 'default': 'transaction'},
   'namespace': {'type': 'string', 'default': 'bootstrap'},
-  'prefix': {'type': 'string', 'default': 'tx'},
+  'prefix': {'type': 'string', 'default': 'transaction'},
+  'label': {'type': 'string', 'default': 'TRANSACTION'},
   'kind': {'type': 'string', 'default': 'node'},
 
-  'keys': {
-    'required': True,
-    'type': 'dict',
-    'schema': {
-      '__id': {'type': 'string','default': ''},
-      'label': {'type': 'string', 'required': True,},
-      'name': {'type': 'string', 'required': True,},
-      'item_prefix': {'type': 'string', 'required': True},
-      '_item_prefix': {'type': 'string', 'required': True},
-    },
-  },
+  'keys': {'required': True, 'type': 'list', 'default': ['__id', 'label', 'name', 'item_prefix', '_item_prefix']},
   
   'props': {
     'required': True,
     'type': 'dict',
     'schema': {
-      'processor_id': {'type': 'string', 'required': True},
-      'processor_uuid': {'type': 'string', 'required': True},
-      'processor_prefix': {'type': 'string', 'required': True},
-      'status': {'type': 'string', 'default': ''},
-      'doc': {'type': 'string', 'default': 'List of references to all not committed items. There are 2 prefixes for each item: one for item in index; and another one for the case when an item lives in loose outside of index. It is a temporary transitional index, all items should be removed after commit. Field status has four states: locked, in_process, waiting, failed or complete.' }
+      '__id': {'type': 'string','default': 'str'},
+      'label': {'type': 'string', 'required': True, 'default': 'str'},
+      'name': {'type': 'string', 'required': True, 'default': 'str'},
+      'item_prefix': {'type': 'string', 'required': True, 'default': 'str'},
+      '_item_prefix': {'type': 'string', 'required': True, 'default': 'str'},
+      'processor_id': {'type': 'string', 'required': True, 'default': 'str'},
+      'processor_uuid': {'type': 'string', 'required': True, 'default': 'str'},
+      'processor_prefix': {'type': 'string', 'required': True, 'default': 'str'},
+      'status': {'type': 'string', 'default': 'str'},
+      'doc': {'type': 'string', 'default': 'str' }
     },
   }
 }
