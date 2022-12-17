@@ -12,6 +12,7 @@ import yaml
 
 class Commands:
 
+    @staticmethod
     def createIndex(rs: redis.Redis, idx_name: str, mds_home: str, schema_path: str, register: bool) -> str|None:        
         try:
             sch = utl.getSchemaFromFile(schema_path)
@@ -27,6 +28,12 @@ class Commands:
             # if idx_name == voc.IDX_REG:
             Commands.registerIndex(rs, mds_home, n_doc, sch)
         return 
+
+    def createIndices(rs: redis.Redis, mds_home:str, dir: str, fileList: list, register: bool):
+        for file in fileList:
+            idx_name = utl.schema_name(file)            
+            path = os.path.join(mds_home, dir, file)
+            Commands.createIndex(rs, idx_name, mds_home, path, True)
 
     @staticmethod
     def registerIndex(rs: redis.Redis, mds_home: str, n_doc:dict, sch):

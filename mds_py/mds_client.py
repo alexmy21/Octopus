@@ -31,6 +31,7 @@ class Client:
         self.boot = os.path.join(self.mds_home, voc.BOOTSTRAP)
         self.schemas = os.path.join(self.mds_home, voc.SCHEMAS)
         self.processors = os.path.join(self.mds_home, voc.PROCESSORS)
+        
         path = os.path.join(self.mds_home, voc.CONFIG, utl.idxFileWithExt(voc.CONFIG_FILE)) 
         self.config = utl.getConfig(path) 
 
@@ -75,10 +76,8 @@ class Client:
         '''
         fileList = utl.fileList(self.boot)
         print('File List: \n {}'.format(fileList))
-        for file in fileList:
-            idx_name = utl.schema_name(file)            
-            path = os.path.join(self.mds_home, self.boot, file)
-            cmd.createIndex(rs, idx_name, self.mds_home, path, True)
 
-
+        # rs: redis.Redis, mds_home:str, dir: str, fileList: list, register: bool
+        cmd.createIndices(rs, self.mds_home, self.boot, fileList, True)
+       
     print('=================== Client new instance =============================')
