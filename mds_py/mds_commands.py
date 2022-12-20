@@ -13,14 +13,22 @@ import yaml
 class Commands:
 
     @staticmethod
-    def createIndex(rs: redis.Redis, idx_name: str, mds_home: str, schema_path: str, register: bool) -> str|None:        
+    def createIndex(rs: redis.Redis, idx_name: str, mds_home: str, schema_path: str) -> str|None:        
+        print(schema_path)
+        sch = utl.getSchemaFromFile(schema_path)
+
+        print('schema: {}'.format(sch))
+
+        v = Validator()
+        p_dict: dict = {}
+        if v.validate(utl.doc_0, sch):
+            n_doc = v.normalized(utl.doc_0, sch)
+            p_dict = n_doc.get('props').items() 
+        else:
+            print('Inavalid: {}'.format(schema_path))
+            return
+
         try:
-            sch = utl.getSchemaFromFile(schema_path)
-            v = Validator()
-            p_dict: dict = {}
-            if v.validate(utl.doc_0, sch):
-                n_doc = v.normalized(utl.doc_0, sch)
-                p_dict = n_doc.get('props').items() 
             rs.ft(idx_name).create_index(utl.ft_schema(p_dict), definition=IndexDefinition(prefix=[utl.prefix(idx_name)]))
         except:
             print('Index already exists')
@@ -29,11 +37,11 @@ class Commands:
             Commands.registerIndex(rs, mds_home, n_doc, sch)
         return 
 
-    def createIndices(rs: redis.Redis, mds_home:str, dir: str, fileList: list, register: bool):
+    def createIndices(rs: redis.Redis, mds_home:str, dir: str, fileList: list):
         for file in fileList:
             idx_name = utl.schema_name(file)            
             path = os.path.join(mds_home, dir, file)
-            Commands.createIndex(rs, idx_name, mds_home, path, True)
+            Commands.createIndex(rs, idx_name, mds_home, path)
 
     @staticmethod
     def registerIndex(rs: redis.Redis, mds_home: str, n_doc:dict, sch):
@@ -48,7 +56,7 @@ class Commands:
             voc.SOURCE: str(sch)
         }
         # print('IDX_REG record: {}'.format(idx_reg_dict[voc.LABEL]))
-        utl.updateRecord(rs, voc.IDX_REG, voc.IDX_REG, file, idx_reg_dict)
+        Commands.updateRecord(rs, voc.IDX_REG, voc.IDX_REG, file, idx_reg_dict)
 
     # def updateRecords(rs:redis.Redis, _list:list[dict]) -> str|None:
     #     pipe = rs.pipeline()
@@ -60,10 +68,58 @@ class Commands:
     #     except:
     #         return None
  
-    def search(rs: redis.Redis, index: str, query: str) -> str|None:
-        return rs.set(index, query)
+    @staticmethod
+    def updateRecord(rs:redis.Redis, pref: str, idx_name: str, schema_path: str, map:dict) -> dict|None:
+        _pref = utl.prefix(pref)        
+        sch = utl.getSchemaFromFile(schema_path)
+     
+        v = Validator()        
+        k_list: dict = []
+        id = ''
+        if v.validate(utl.doc_0, sch):
+            n_doc = v.normalized(utl.doc_0, sch)
+            _map:dict = n_doc[voc.PROPS]
+            _map.update(map)
+            k_list = n_doc.get(voc.KEYS)
+            id = utl.sha1(k_list, _map)
+            _map[voc.ID] = id
+            rs.hset(_pref + id, mapping=_map)
+            return _map
 
-    def set(rs: redis.Redis, index: str, query: str) -> str|None:
-        return rs.set(index, query)
+        return None
+
+    @staticmethod
+    def getRecord(rs:redis.Redis, pref: str, item_id: str,) -> dict|None:
+        return rs.hgetall(pref + item_id)
+
+    def search(rs: redis.Redis, index: str, query: str|Query, query_params: dict|None = None) -> str|None:
+        if query_params == None:
+            return rs.ft(index).search(query)
+        else:
+            return rs.ft(index).search(query, query_params)
+
+    def txStatus(rs: redis.Redis, proc_id: str, proc_pref: str, item_id: str, item_prefix: str, status: str) -> str|None:
+        tx_pref = utl.prefix(voc.TRANSACTION)
+        map:dict = rs.hgetall(tx_pref + item_id)
+        _map = {}
+        _map[voc.ID] = item_id
+        _map[voc.PROCESSOR_ID] = proc_id
+        _map[voc.PROCESSOR_PREFIX] = proc_pref
+        _map[voc.ITEM_ID] = item_id
+        _map[voc.ITEM_PREFIX] = item_prefix
+        _map[utl.underScore(voc.ITEM_PREFIX)] = utl.underScore(item_prefix)
+        _map[voc.STATUS] = status
+        if map == None:
+            _map[voc.PROCESSOR_UUID] = ''
+            _map[voc.DOC] = ''
+            rs.hset(tx_pref + item_id, mapping=_map)
+        else:
+            map.update(_map)
+            rs.hset(tx_pref + item_id, mapping=map)
+
+        return voc.OK
+
+    def set(rs: redis.Redis, key: str, value: str) -> str|None:
+        return rs.set(key, value)
 
     

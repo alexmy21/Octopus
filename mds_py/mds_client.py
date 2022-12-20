@@ -1,5 +1,6 @@
 import os
 import redis as srv
+from redis.commands.search.query import NumericFilter, Query
 
 import mds_py.mds_utils as utl
 from . mds_vocabulary import Vocabulary as voc
@@ -7,12 +8,7 @@ from . mds_vocabulary import Vocabulary as voc
 from . mds_commands import Commands as cmd
 
 class Client:   
-    mds_home: str|None
-    boot:str
-    config: str
-    schemas:str
-    processors:str 
-
+    
     def __init__(self, _mds_home: str|None = None ):
         if _mds_home is not None:
             if _mds_home in os.environ:
@@ -27,13 +23,17 @@ class Client:
         else:
             self.mds_home = None
             raise RuntimeError(f"Error: Provided '{_mds_home}' mds home directory doesn't exist.")
+
          # set path for all standard directories in mds_home
         self.boot = os.path.join(self.mds_home, voc.BOOTSTRAP)
-        self.schemas = os.path.join(self.mds_home, voc.SCHEMAS)
+        self.config = os.path.join(self.mds_home, voc.CONFIG)
         self.processors = os.path.join(self.mds_home, voc.PROCESSORS)
+        self.schemas = os.path.join(self.mds_home, voc.SCHEMAS)
+        self.scripts = os.path.join(self.mds_home, voc.SCRIPTS)
+        self.sqlite_files = os.path.join(self.mds_home, voc.SQLITE_FILES)
         
         path = os.path.join(self.mds_home, voc.CONFIG, utl.idxFileWithExt(voc.CONFIG_FILE)) 
-        self.config = utl.getConfig(path) 
+        self.config_props = utl.getConfig(path) 
 
     # Following is a list  wrappers for commands from Commands module
     #====================================================================
@@ -44,31 +44,31 @@ class Client:
         return utl.getSchemaFromFile(file_name)
 
     def index_info(self, idx_name: str) -> str|None:
-        rs = utl.getRedis(self.config)
+        rs = utl.getRedis(self.config_props)
         return rs.ft(idx_name).info()
 
-    def create_index(self, schema_dir: str, schema_name: str) -> str|None :
-        rs = utl.getRedis(self.config)
-        schema_path = os.path.join(self.mds_home, schema_dir, utl.idxFileWithExt(schema_name))
-        ret_str = cmd.createIndex(rs, schema_name, self.mds_home, schema_path)
+    def create_index(self, schema_dir: str, idx_name: str) -> str|None :
+        rs = utl.getRedis(self.config_props)
+        path = os.path.join(self.mds_home, schema_dir, utl.idxFileWithExt(idx_name))
+        ret_str = cmd.createIndex(rs, idx_name, self.mds_home, path)
 
         return ret_str
     
     def update_record(self, schema_dir: str, schema_name: str, map: dict) -> str|None:
-        rs = utl.getRedis(self.config)
+        rs = utl.getRedis(self.config_props)
         path = os.path.join(self.mds_home, schema_dir, utl.idxFileWithExt(schema_name))
         # rs:redis.Redis, pref: str, idx_name: str, schema_path: str, map:dict
-        return utl.updateRecord(rs, schema_name, schema_name, path, map)
+        return cmd.updateRecord(rs, schema_name, schema_name, path, map)
 
-    def search(self, idx: str):
-        rs = utl.getRedis(self.config)
-        return rs.ft(idx)    
+    def search(self, idx: str, query: str|Query, query_params: dict|None = None):
+        rs = utl.getRedis(self.config_props)            
+        return cmd.search(rs, idx, query_params)
 
-    def boot_strap(self):
-        rs = utl.getRedis(self.config)
+    def bootstrap(self):
+        rs = utl.getRedis(self.config_props)
         '''First create idx_reg index'''
         schema_path = os.path.join(self.mds_home, voc.BOOTSTRAP, utl.idxFileWithExt(voc.IDX_REG))
-        cmd.createIndex(rs, voc.IDX_REG, self.mds_home, schema_path, False)
+        cmd.createIndex(rs, voc.IDX_REG, self.mds_home, schema_path)
         '''
         get idx files from bootstrap directory
         and register them in idx_reg index
@@ -78,6 +78,20 @@ class Client:
         print('File List: \n {}'.format(fileList))
 
         # rs: redis.Redis, mds_home:str, dir: str, fileList: list, register: bool
-        cmd.createIndices(rs, self.mds_home, self.boot, fileList, True)
-       
+        cmd.createIndices(rs, self.mds_home, self.boot, fileList)
+
+    # rs: redis.Redis, index: str, query: str|Query, query_params: dict|None = None 
+    def tx_lock(self, proc_id: str, query: str, batch: int = 100):
+        rs = utl.getRedis(self.config_props) 
+        limit = {
+            'limit': batch
+        }
+        return cmd.search(rs, voc.TRANSACTION, query, limit)
+
+    # rs: redis.Redis, proc_id: str, proc_pref: str, item_id: str, item_prefix: str, status: str
+    def tx_status(self, proc_id: str, proc_pref: str, item_id: str, item_prefix: str, status: str) -> str|None:
+        rs = utl.getRedis(self.config_props)
+        
+        return cmd.txStatus(rs, proc_id, proc_pref, item_id, item_prefix, status)
+    
     print('=================== Client new instance =============================')

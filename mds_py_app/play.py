@@ -9,7 +9,7 @@ import redis
 import re
 
 client = Client(None)
-client.boot_strap()
+client.bootstrap()
 
 file = client.schema_file_name(voc.BOOTSTRAP, 'idx_reg')
 schema = client.schema_from_file(file)

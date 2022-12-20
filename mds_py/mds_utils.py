@@ -34,9 +34,6 @@ def idxFileWithExt(schema: str) -> str|None:
     else:
         return schema + '.yaml' 
 
-def prefix(idx_name: str) -> str:
-    return idx_name + ':'
-
 def getConfig(file_name: str|None) -> dict|None:
     config: dict | None
     try:
@@ -67,22 +64,6 @@ def ft_schema(schema: dict) -> tuple|None:
             dictlist.append(temp) 
     return tuple(i for i in dictlist)
 
-def updateRecord(rs:redis.Redis, pref: str, idx_name: str, schema_path: str, map:dict) -> str|None:
-    _pref = prefix(pref)        
-    sch = getSchemaFromFile(schema_path)
-     
-    v = Validator()        
-    k_list: dict = []
-    id = ''
-    if v.validate(doc_0, sch):
-        n_doc = v.normalized(doc_0, sch)
-        n_doc[voc.PROPS] = map
-        k_list = n_doc.get('keys')
-        id = sha1(k_list, map)
-        map['__id'] = id
-
-    return rs.hset(_pref + id, mapping=map)
-
 # Generates SHA1 hash code from key fields of props 
 # dictionary
 def sha1(keys: list, props: dict) -> str|None:
@@ -96,3 +77,19 @@ def sha1(keys: list, props: dict) -> str|None:
     m = hashlib.sha1()
     m.update(sha.encode())
     return m.hexdigest()
+
+'''
+    Mics methods
+'''
+
+def prefix(term: str) -> str:
+    if term.endswith(':'):
+        return term
+    else:
+        return term + ':'
+
+def underScore(term: str) -> str|None:
+    if term.startswith('_'):
+        return term
+    else:
+        return '_' + term

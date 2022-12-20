@@ -5,20 +5,19 @@
   'label': {'type': 'string', 'default': 'TRANSACTION'},
   'kind': {'type': 'string', 'default': 'node'},
 
-  'keys': {'required': True, 'type': 'list', 'default': ['__id', 'label', 'name', 'item_prefix', '_item_prefix']},
+  'keys': {'required': True, 'type': 'list', 'default': ['item_id', 'item_prefix']},
   
   'props': {
     'required': True,
     'type': 'dict',
     'schema': {
       '__id': {'type': 'string','default': 'str'},
-      'label': {'type': 'string', 'required': True, 'default': 'str'},
-      'name': {'type': 'string', 'required': True, 'default': 'str'},
+      'item_id': {'type': 'string', 'required': True, 'default': 'str'},
       'item_prefix': {'type': 'string', 'required': True, 'default': 'str'},
       '_item_prefix': {'type': 'string', 'required': True, 'default': 'str'},
       'processor_id': {'type': 'string', 'required': True, 'default': 'str'},
-      'processor_uuid': {'type': 'string', 'required': True, 'default': 'str'},
-      'processor_prefix': {'type': 'string', 'required': True, 'default': 'str'},
+      'processor_uuid': {'type': 'string', 'required': True, 'default': ''},
+      'processor_prefix': {'type': 'string', 'default': 'str'},
       'status': {'type': 'string', 'default': 'str'},
       'doc': {'type': 'string', 'default': 'str' }
     },

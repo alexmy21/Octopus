@@ -5,26 +5,24 @@
   'label': {'type': 'string', 'default': 'PROC_REG'},
   'kind': {'type': 'string', 'default': 'node'},
 
-  'keys': {'required': True, 'type': 'list', 'default': ['__id', 'label', 'name', 'groupId', 'artifactId', 'version', 'packaging','language', 'repo', 'package']},
+  'keys': {'required': True, 'type': 'list', 'default': ['label', 'name', 'groupId', 'artifactId', 'version', 'packaging','language', 'repo', 'package']},
 
   'props': {
     'required': True,
     'type': 'dict',
     'schema': {
-      '__id': {'type': 'string', 'default': ''},
-      'label': {'type': 'string', 'default': 'PROC_LIST'},
-      'name': {'type': 'string', 'default': ''},
-      'groupId': {'type': 'string', 'default': ''},
-      'artifactId': {'type': 'string', 'default': ''},
-      'version': {'type': 'string', 'default': ''},
-      'packaging': {'type': 'string', 'default': ''},
-      'language': {'type': 'string', 'default': ''},
-      'repo': {'type': 'string', 'default': ''},
-      'package': {'type': 'string', 'default': ''},
-      'yaml_schema': {'type': 'string', 'default': ''},
+      '__id': {'type': 'string', 'default': 'str'},
+      'label': {'type': 'string', 'default': 'str'},
+      'name': {'type': 'string', 'default': 'str'},
+      'groupId': {'type': 'string', 'default': 'str'},
+      'artifactId': {'type': 'string', 'default': 'str'},
+      'version': {'type': 'string', 'default': 'str'},
+      'packaging': {'type': 'string', 'default': 'str'},
+      'language': {'type': 'string', 'default': 'str'},
+      'repo': {'type': 'string', 'default': 'str'},
+      'package': {'type': 'string', 'default': 'str'},
+      'yaml_schema': {'type': 'string', 'default': 'str'},
       'doc': {'type': 'string', 'default': 'str'},
     }
   }
 }
-
-
