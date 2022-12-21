@@ -26,6 +26,7 @@ class Vocabulary:
     PROPS = 'props'
     SOURCE = 'source'
     DOC = 'doc'
+    SIZE = 'size'
 
     # TRANSACTION
     ITEM_ID = 'item_id'
@@ -46,3 +47,9 @@ class Vocabulary:
     REDIS = 'redis'
     REDIS_HOST = 'host'
     REDIS_PORT = 'port'
+
+    # Data sources
+    FILE = 'file'
+    FILE_TYPE = 'file_type'
+    DB = 'db'
+    DB_TYPE = 'db_type'

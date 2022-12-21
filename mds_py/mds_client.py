@@ -1,4 +1,5 @@
 import os
+import pathlib
 import redis as srv
 from redis.commands.search.query import NumericFilter, Query
 
@@ -54,6 +55,7 @@ class Client:
 
         return ret_str
     
+    @staticmethod
     def update_record(self, schema_dir: str, schema_name: str, map: dict) -> str|None:
         rs = utl.getRedis(self.config_props)
         path = os.path.join(self.mds_home, schema_dir, utl.idxFileWithExt(schema_name))
@@ -91,7 +93,29 @@ class Client:
     # rs: redis.Redis, proc_id: str, proc_pref: str, item_id: str, item_prefix: str, status: str
     def tx_status(self, proc_id: str, proc_pref: str, item_id: str, item_prefix: str, status: str) -> str|None:
         rs = utl.getRedis(self.config_props)
-        
+
         return cmd.txStatus(rs, proc_id, proc_pref, item_id, item_prefix, status)
+        
+    def file_meta(self, proc_id: str, proc_pref: str, file: str) -> str|None:
+        rs = utl.getRedis(self.config_props)
+        stats = os.stat(file)
+        map = {
+            voc.NAME: f'{file}',
+            voc.LABEL: voc.FILE,
+            voc.IN_PROCESS: voc.FILE,
+            voc.FILE_TYPE: pathlib.Path(file).suffix,
+            voc.SIZE: stats.st_size,
+            voc.DOC: ''
+        }
+        _map: dict = Client.update_record(self, schema_dir=voc.SCHEMAS, schema_name=voc.FILE, map=map) 
+        if _map == None:
+            return None   
+        else:
+            st_map: dict = cmd.txStatus(rs, proc_id, proc_pref, _map[voc.ID], _map[voc.ITEM_PREFIX], voc.WAITING)
+            if st_map == None:
+                return None
+            else:
+                return voc.OK
+
     
     print('=================== Client new instance =============================')

@@ -1,4 +1,5 @@
 import os
+import pathlib
 import redis
 from redis.commands.search.field import TextField, NumericField, TagField
 from redis.commands.search.indexDefinition import IndexDefinition, IndexType
@@ -13,12 +14,9 @@ import yaml
 class Commands:
 
     @staticmethod
-    def createIndex(rs: redis.Redis, idx_name: str, mds_home: str, schema_path: str) -> str|None:        
-        print(schema_path)
+    def createIndex(rs: redis.Redis, idx_name: str, mds_home: str, schema_path: str) -> str|None: 
         sch = utl.getSchemaFromFile(schema_path)
-
-        print('schema: {}'.format(sch))
-
+        
         v = Validator()
         p_dict: dict = {}
         if v.validate(utl.doc_0, sch):
@@ -44,7 +42,7 @@ class Commands:
             Commands.createIndex(rs, idx_name, mds_home, path)
 
     @staticmethod
-    def registerIndex(rs: redis.Redis, mds_home: str, n_doc:dict, sch):
+    def registerIndex(rs: redis.Redis, mds_home: str, n_doc:dict, sch) -> dict|None:
         ''' Register index in dx_reg '''         
         file = os.path.join(mds_home, voc.BOOTSTRAP, voc.IDX_REG + '.yaml')
         idx_reg_dict: dict = {
@@ -56,18 +54,8 @@ class Commands:
             voc.SOURCE: str(sch)
         }
         # print('IDX_REG record: {}'.format(idx_reg_dict[voc.LABEL]))
-        Commands.updateRecord(rs, voc.IDX_REG, voc.IDX_REG, file, idx_reg_dict)
+        return Commands.updateRecord(rs, voc.IDX_REG, voc.IDX_REG, file, idx_reg_dict)
 
-    # def updateRecords(rs:redis.Redis, _list:list[dict]) -> str|None:
-    #     pipe = rs.pipeline()
-    #     try:
-    #         for map in _list:
-    #             pipe.hset('hash', mapping=map)
-    #         pipe.execute()
-    #         return voc.OK
-    #     except:
-    #         return None
- 
     @staticmethod
     def updateRecord(rs:redis.Redis, pref: str, idx_name: str, schema_path: str, map:dict) -> dict|None:
         _pref = utl.prefix(pref)        
@@ -118,8 +106,6 @@ class Commands:
             rs.hset(tx_pref + item_id, mapping=map)
 
         return voc.OK
-
+    
     def set(rs: redis.Redis, key: str, value: str) -> str|None:
         return rs.set(key, value)
-
-    

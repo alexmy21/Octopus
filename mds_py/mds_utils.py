@@ -1,4 +1,5 @@
 
+import csv
 from typing import Sequence
 from . mds_vocabulary import Vocabulary as voc
 
@@ -93,3 +94,12 @@ def underScore(term: str) -> str|None:
         return term
     else:
         return '_' + term
+
+def csvHeader(file_path: str) -> bool|None:
+    try:
+        with open(file_path) as csvfile:
+            dialect = csv.Sniffer().sniff(csvfile.read(1024))
+            return csv.Sniffer().has_header(csvfile.read(1024))
+    except:
+        print('Error reading file')
+        return None
