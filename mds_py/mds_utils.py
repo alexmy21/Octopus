@@ -97,9 +97,8 @@ def underScore(term: str) -> str|None:
 
 def csvHeader(file_path: str) -> bool|None:
     try:
-        with open(file_path) as csvfile:
-            dialect = csv.Sniffer().sniff(csvfile.read(1024))
-            return csv.Sniffer().has_header(csvfile.read(1024))
+        with open(file_path, mode = 'r', encoding="utf-8", errors="backslashreplace") as csvfile:
+            return csv.Sniffer().has_header(csvfile.read(4096))
     except:
         print('Error reading file')
         return None

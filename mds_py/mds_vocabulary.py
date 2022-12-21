@@ -31,6 +31,7 @@ class Vocabulary:
     # TRANSACTION
     ITEM_ID = 'item_id'
     ITEM_PREFIX = 'item_prefix'
+    ITEM_TYPE = 'item_type'
     PROCESSOR_ID ='processor_id'
     PROCESSOR_UUID = 'processor_uuid'
     PROCESSOR_PREFIX = 'processor_prefix'

@@ -59,8 +59,7 @@ class Commands:
     @staticmethod
     def updateRecord(rs:redis.Redis, pref: str, idx_name: str, schema_path: str, map:dict) -> dict|None:
         _pref = utl.prefix(pref)        
-        sch = utl.getSchemaFromFile(schema_path)
-     
+        sch = utl.getSchemaFromFile(schema_path)     
         v = Validator()        
         k_list: dict = []
         id = ''
@@ -73,7 +72,6 @@ class Commands:
             _map[voc.ID] = id
             rs.hset(_pref + id, mapping=_map)
             return _map
-
         return None
 
     @staticmethod
@@ -86,26 +84,38 @@ class Commands:
         else:
             return rs.ft(index).search(query, query_params)
 
-    def txStatus(rs: redis.Redis, proc_id: str, proc_pref: str, item_id: str, item_prefix: str, status: str) -> str|None:
+    def txUpdate(rs: redis.Redis, proc_id: str, proc_pref: str, item_id: str, item_prefix: str, item_type: str, status: str) -> str|None:
         tx_pref = utl.prefix(voc.TRANSACTION)
         map:dict = rs.hgetall(tx_pref + item_id)
         _map = {}
         _map[voc.ID] = item_id
         _map[voc.PROCESSOR_ID] = proc_id
         _map[voc.PROCESSOR_PREFIX] = proc_pref
-        _map[voc.ITEM_ID] = item_id
         _map[voc.ITEM_PREFIX] = item_prefix
         _map[utl.underScore(voc.ITEM_PREFIX)] = utl.underScore(item_prefix)
-        _map[voc.STATUS] = status
+        _map[voc.ITEM_TYPE] = item_type
+        _map[voc.PROCESSOR_UUID] = ' '
         if map == None:
-            _map[voc.PROCESSOR_UUID] = ''
-            _map[voc.DOC] = ''
+            _map[voc.ITEM_ID] = item_id
+            _map[voc.ITEM_PREFIX] = item_prefix
+            _map[voc.DOC] = ' '
             rs.hset(tx_pref + item_id, mapping=_map)
         else:
             map.update(_map)
             rs.hset(tx_pref + item_id, mapping=map)
-
         return voc.OK
-    
+
+    def txStatus(rs: redis.Redis, proc_id: str, proc_pref: str, item_id: str, status: str) -> str|None:
+        tx_pref = utl.prefix(voc.TRANSACTION)
+        map:dict = rs.hgetall(tx_pref + item_id)        
+        if map == None:
+            return None
+        else:            
+            map[voc.PROCESSOR_ID] = proc_id
+            map[voc.PROCESSOR_PREFIX] = proc_pref
+            map[voc.STATUS] = status
+            rs.hset(tx_pref + item_id, mapping=map)
+        return voc.OK
+
     def set(rs: redis.Redis, key: str, value: str) -> str|None:
         return rs.set(key, value)

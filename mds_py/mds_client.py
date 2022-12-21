@@ -94,15 +94,14 @@ class Client:
     def tx_status(self, proc_id: str, proc_pref: str, item_id: str, item_prefix: str, status: str) -> str|None:
         rs = utl.getRedis(self.config_props)
 
-        return cmd.txStatus(rs, proc_id, proc_pref, item_id, item_prefix, status)
+        return cmd.txUpdate(rs, proc_id, proc_pref, item_id, item_prefix, status)
         
     def file_meta(self, proc_id: str, proc_pref: str, file: str) -> str|None:
         rs = utl.getRedis(self.config_props)
         stats = os.stat(file)
         map = {
             voc.NAME: f'{file}',
-            voc.LABEL: voc.FILE,
-            voc.IN_PROCESS: voc.FILE,
+            voc.LABEL: voc.FILE.upper(),
             voc.FILE_TYPE: pathlib.Path(file).suffix,
             voc.SIZE: stats.st_size,
             voc.DOC: ''
@@ -111,7 +110,7 @@ class Client:
         if _map == None:
             return None   
         else:
-            st_map: dict = cmd.txStatus(rs, proc_id, proc_pref, _map[voc.ID], _map[voc.ITEM_PREFIX], voc.WAITING)
+            st_map: dict = cmd.txUpdate(rs, proc_id, proc_pref, _map[voc.ID], _map[voc.ITEM_PREFIX], _map[voc.FILE_TYPE], voc.WAITING)
             if st_map == None:
                 return None
             else:
