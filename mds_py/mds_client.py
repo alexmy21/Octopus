@@ -93,8 +93,7 @@ class Client:
     # rs: redis.Redis, proc_id: str, proc_pref: str, item_id: str, item_prefix: str, status: str
     def tx_status(self, proc_id: str, proc_pref: str, item_id: str, item_prefix: str, status: str) -> str|None:
         rs = utl.getRedis(self.config_props)
-
-        return cmd.txUpdate(rs, proc_id, proc_pref, item_id, item_prefix, status)
+        return cmd.txStatus(rs, proc_id, proc_pref, item_id, status)
         
     def file_meta(self, proc_id: str, proc_pref: str, file: str) -> str|None:
         rs = utl.getRedis(self.config_props)

@@ -16,11 +16,6 @@ client.create_index(voc.SCHEMAS, voc.FILE)
 if __name__ == "__main__":
     for file in Path(directory).glob("**/*.csv"):
         print('HEADER: {}'.format(utl.csvHeader(file)))
-        ret = client.file_meta('meta_builder', 'meta', file)
-        if ret != None:
-            print('OK: {}'.format(file))
-        else:
+        ret = client.file_meta('file_meta', 'meta', file)
+        if ret == None:
             print('Error updating: {}'.format(file))
-
-
-
